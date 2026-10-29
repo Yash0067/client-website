@@ -24,7 +24,7 @@ This version does **not** use Google Sheets. The website sends each appointment 
    python3 server.py
    ```
 
-4. Open **http://localhost:8000/**. Submit a test appointment, then open the configured workbook to confirm it was added.
+4. Open . Submit a test appointment, then open the configured workbook to confirm it was added.
 
 When you stop the server, the website cannot accept requests until it is running again.
 
