@@ -33,6 +33,7 @@ When you stop the server, the website cannot accept requests until it is running
 - Host the whole folder on a Python-capable web service. Static hosting alone is not enough.
 - Install `requirements.txt`; start with `python server.py`. The server listens on `0.0.0.0` and uses the `PORT` environment variable supplied by the host, or port 8000 if absent.
 - Set `APPOINTMENTS_XLSX` if the workbook should be stored at a different path.
+- For Vercel, configure `APP_DATA_DIR` and `APPOINTMENTS_XLSX` only for temporary runtime storage; Vercel filesystem data is not persistent. Use a persistent database and file storage for production bookings.
 - Mount persistent storage and set `APP_DATA_DIR` to its path. The SQLite database is stored there. Without a persistent disk, redeploys/restarts on some hosts erase all bookings. Back it up securely and test restoration. Never expose or publish the database or admin credentials.
 - Use HTTPS for a public deployment. A production deployment needs appropriate access controls, abuse/rate limiting, privacy and retention policies, monitoring, backups and a hosting configuration suitable for SQLite and the workbook.
 - Open the public site and submit a test, then confirm the request was appended to the workbook. Delete test data only through a deliberate process; don't delete real bookings accidentally.

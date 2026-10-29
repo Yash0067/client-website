@@ -27,7 +27,8 @@ except ImportError:
     sys.exit('Install the dependency first: pip install -r requirements.txt')
 
 ROOT = Path(__file__).resolve().parent
-DATA = Path(os.environ.get('APP_DATA_DIR', str(ROOT / 'data'))).resolve()
+default_data_dir = '/tmp/adarsh-boutique-data' if os.environ.get('VERCEL') else str(ROOT / 'data')
+DATA = Path(os.environ.get('APP_DATA_DIR', default_data_dir)).resolve()
 DATA.mkdir(mode=0o700, parents=True, exist_ok=True)
 DB = DATA / 'appointments.sqlite3'
 XLSX_PATH = Path(os.environ.get('APPOINTMENTS_XLSX', str(DATA / 'Adarsh_Appointments.xlsx')).strip()).expanduser().resolve()
