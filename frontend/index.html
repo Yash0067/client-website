@@ -14,6 +14,7 @@
   The included images are AI-generated examples, not actual work.
   The sample reviews must be replaced with real customer reviews.
   ============================================================= -->
+<script src="config.js"></script>
 <script>
 const SHOP = {
   name: "Adarsh Boutique",
@@ -27,7 +28,7 @@ const SHOP = {
   mapQuery: "19.220935,72.832053", // Coordinates from the Google Maps link
   mapLink: "https://maps.app.goo.gl/v5hmep8yFnrA4Am59",
   mapEmbedUrl: "https://www.google.com/maps/embed?pb=!4v1793293315045!6m8!1m7!1st3oPMs9Q2ibpaKLpThClEA!2m2!1d19.2209362351281!2d72.8319703198901!3f74.2016!4f0!5f0.7820865974627469", // Google Maps embed for this location
-  appointmentEndpoint: "/api/appointments" // Same-server appointment receiver
+  appointmentEndpoint: (window.APP_CONFIG && window.APP_CONFIG.appointmentEndpoint) || "/api/appointments"
 };
 const PHOTO_OVERRIDES = {
   hero: "",          // Example: "my-workroom.jpg" or a data:image URL
@@ -170,7 +171,7 @@ document.getElementById('contact-form').addEventListener('submit',e=>{e.preventD
 // The web app returns a real success/error page; this page never claims a booking was saved by itself.
 const bookingForm=document.getElementById('appointment-form'),bookingStatus=document.getElementById('appointment-status');
 const bookingEndpoint=clean(SHOP.appointmentEndpoint);
-const validBookingEndpoint=bookingEndpoint==='/api/appointments' && /^https?:$/.test(location.protocol);
+const validBookingEndpoint=/^https?:\/\/.+\/api\/appointments$/.test(bookingEndpoint) || (bookingEndpoint==='/api/appointments' && /^https?:$/.test(location.protocol));
 function bookingId(){if(globalThis.crypto && typeof crypto.randomUUID==='function')return crypto.randomUUID();return 'booking-'+Date.now()+'-'+Math.random().toString(36).slice(2,15)}
 let bookingSubmitted=false;
 document.getElementById('appointment-id').value=bookingId();

@@ -219,9 +219,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = urlsplit(self.path).path
-        if path in ('/', '/index.html', '/tailor-shop.html'):
-            self.reply(200, (ROOT / 'index.html').read_bytes(), headers={'Cache-Control':'no-cache'})
-        elif path == '/healthz':
+        if path == '/healthz':
             self.reply(200, b'ok', 'text/plain; charset=utf-8')
         else:
             self.reply(404, b'Not found', 'text/plain; charset=utf-8')

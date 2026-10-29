@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: adarsh-boutique-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    envVars:
+      - key: APP_DATA_DIR
+        value: /var/data/adarsh-boutique
+      - key: APPOINTMENTS_XLSX
+        value: /var/data/adarsh-boutique/Adarsh_Appointments.xlsx
+    disk:
+      name: adarsh-boutique-data
+      mountPath: /var/data
+      sizeGB: 1

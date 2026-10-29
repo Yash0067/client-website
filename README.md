@@ -1,40 +1,28 @@
-# Adarsh Boutique — automatic appointments with Excel download
+# Adarsh Boutique
 
-This version does **not** use Google Sheets. The website sends each appointment request to the included Python server. The server saves it in a SQLite database and appends each new request directly to an Excel workbook. Set `APPOINTMENTS_XLSX` to use a specific workbook path.
+The project is split into two independently deployable applications:
 
-## Run on your computer
+- `frontend/` is the responsive static website. Deploy it to Vercel.
+- `backend/` is the Python appointment API. Deploy it to Render or Railway.
 
-1. Install Python 3.9 or newer. Unzip this folder and open a terminal inside it.
-2. Install the required package:
+## Deploy the backend first
 
-   ```bash
-   python -m pip install -r requirements.txt
-   ```
+Deploy the `backend` folder with:
 
-3. Start the server. **Windows PowerShell:**
+```text
+Build command: pip install -r requirements.txt
+Start command: python server.py
+```
 
-   ```powershell
-   python server.py
-   ```
+Configure persistent storage:
 
-   **macOS or Linux:**
+- `APP_DATA_DIR`: directory for SQLite data
+- `APPOINTMENTS_XLSX`: full path to the Excel workbook
 
-   ```bash
-   export ADMIN_PASSWORD='choose-a-long-unique-password'
-   python3 server.py
-   ```
+The backend exposes `POST /api/appointments` and `GET /healthz`.
 
-4. Open . Submit a test appointment, then open the configured workbook to confirm it was added.
+## Deploy the frontend second
 
-When you stop the server, the website cannot accept requests until it is running again.
+Edit `frontend/config.js` and set `appointmentEndpoint` to the backend URL ending in `/api/appointments`. Then deploy the `frontend` folder as a static site on Vercel.
 
-## Deploy online
-
-- Host the whole folder on a Python-capable web service. Static hosting alone is not enough.
-- Install `requirements.txt`; start with `python server.py`. The server listens on `0.0.0.0` and uses the `PORT` environment variable supplied by the host, or port 8000 if absent.
-- Set `APPOINTMENTS_XLSX` if the workbook should be stored at a different path.
-- For Vercel, configure `APP_DATA_DIR` and `APPOINTMENTS_XLSX` only for temporary runtime storage; Vercel filesystem data is not persistent. Use a persistent database and file storage for production bookings.
-- Mount persistent storage and set `APP_DATA_DIR` to its path. The SQLite database is stored there. Without a persistent disk, redeploys/restarts on some hosts erase all bookings. Back it up securely and test restoration. Never expose or publish the database or admin credentials.
-- Use HTTPS for a public deployment. A production deployment needs appropriate access controls, abuse/rate limiting, privacy and retention policies, monitoring, backups and a hosting configuration suitable for SQLite and the workbook.
-- Open the public site and submit a test, then confirm the request was appended to the workbook. Delete test data only through a deliberate process; don't delete real bookings accidentally.
-- Requests are preferences only. You must contact the customer to confirm. No availability checking or double-booking prevention is provided.
+The backend stores each booking in SQLite and appends it to the configured Excel workbook. Use persistent storage in production; temporary server files can be erased during redeploys.
