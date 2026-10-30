@@ -171,18 +171,25 @@ document.getElementById('contact-form').addEventListener('submit',e=>{e.preventD
 // The web app returns a real success/error page; this page never claims a booking was saved by itself.
 const bookingForm=document.getElementById('appointment-form'),bookingStatus=document.getElementById('appointment-status');
 const bookingEndpoint=clean(SHOP.appointmentEndpoint);
-const validBookingEndpoint=/^https?:\/\/.+\/api\/appointments$/.test(bookingEndpoint) || (bookingEndpoint==='/api/appointments' && /^https?:$/.test(location.protocol));
-function bookingId(){if(globalThis.crypto && typeof crypto.randomUUID==='function')return crypto.randomUUID();return 'booking-'+Date.now()+'-'+Math.random().toString(36).slice(2,15)}
+const validBookingEndpoint=/^https?:\/\/.+\/api\/appointments$/.test(bookingEndpoint)||/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(bookingEndpoint)||(bookingEndpoint==='/api/appointments'&&/^https?:$/.test(location.protocol));
+function bookingId(){if(globalThis.crypto&&typeof crypto.randomUUID==='function')return crypto.randomUUID();return 'booking-'+Date.now()+'-'+Math.random().toString(36).slice(2,15)}
 let bookingSubmitted=false;
 document.getElementById('appointment-id').value=bookingId();
 try{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());let part=t=>parts.find(x=>x.type===t).value;document.getElementById('booking-date').min=part('year')+'-'+part('month')+'-'+part('day')}catch(_){}
-if(validBookingEndpoint)bookingForm.action=bookingEndpoint;
-else {bookingStatus.hidden=false;bookingStatus.textContent='Online booking is being set up. Please contact us on WhatsApp or call to arrange a visit.';document.getElementById('booking-submit').disabled=true;document.getElementById('booking-submit').textContent='Online booking unavailable';document.getElementById('booking-confirmation-note').hidden=true}
+if(!validBookingEndpoint){bookingStatus.hidden=false;bookingStatus.textContent='Online booking is being set up. Please contact us on WhatsApp or call to arrange a visit.';document.getElementById('booking-submit').disabled=true;document.getElementById('booking-submit').textContent='Online booking unavailable';document.getElementById('booking-confirmation-note').hidden=true}
 bookingForm.addEventListener('input',()=>{if(bookingSubmitted){document.getElementById('appointment-id').value=bookingId();bookingSubmitted=false}});
 bookingForm.addEventListener('submit',e=>{
- if(!validBookingEndpoint){e.preventDefault();bookingStatus.hidden=false;bookingStatus.textContent='Online booking is being set up. Please contact us on WhatsApp or call to arrange a visit.';return}
- let digits=bookingForm.elements.phone.value.replace(/\D/g,'');if(digits.length<7||digits.length>15){e.preventDefault();bookingStatus.hidden=false;bookingStatus.textContent='Please enter a valid phone number.';return}
- bookingStatus.hidden=false;bookingStatus.textContent='Please wait for the confirmation page. If it does not appear, contact us on WhatsApp.';bookingSubmitted=true;
+ e.preventDefault();
+ if(!validBookingEndpoint){bookingStatus.hidden=false;bookingStatus.textContent='Online booking is being set up. Please contact us on WhatsApp or call to arrange a visit.';return}
+ let digits=bookingForm.elements.phone.value.replace(/\D/g,'');if(digits.length<7||digits.length>15){bookingStatus.hidden=false;bookingStatus.textContent='Please enter a valid phone number.';return}
+ bookingStatus.hidden=false;bookingStatus.textContent='Sending your request, please wait...';
+ const submitBtn=document.getElementById('booking-submit');
+ submitBtn.disabled=true;
+ const params=new URLSearchParams(new FormData(bookingForm)).toString();
+ fetch(bookingEndpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:params})
+  .then(()=>{bookingStatus.style.color='#1a7a3c';bookingStatus.textContent='Your appointment request was sent successfully! We will contact you to confirm.';bookingForm.reset();document.getElementById('appointment-id').value=bookingId();submitBtn.disabled=false;bookingSubmitted=false;})
+  .catch(()=>{bookingStatus.style.color='#c0392b';bookingStatus.textContent='Something went wrong. Please try again or contact us on WhatsApp.';submitBtn.disabled=false;});
+ bookingSubmitted=true;
 });
 
 // Scroll progress and gentle reveals; respect reduced-motion preferences.
