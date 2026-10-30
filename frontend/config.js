@@ -1,4 +1,4 @@
-// Paste the URL of your deployed Google Apps Script Web App here.
+// Google Apps Script Web App URL — appointment data goes directly into Google Sheet.
 window.APP_CONFIG = {
-  appointmentEndpoint: "PASTE_YOUR_APPS_SCRIPT_URL_HERE"
+  appointmentEndpoint: "https://script.google.com/macros/s/AKfycbwNa3nsGsMSV3e7ObGcLHgPFDDLJef9XPYCWK4MKKlHS9tBkrSo0qiRvKQup1I6We45jA/exec"
 };
